@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 13:58:56
- * @LastEditTime: 2021-12-29 07:05:16
+ * @LastEditTime: 2021-12-29 07:34:47
  * @LastEditors: NMTuan
  * @Description: 设置
  * @FilePath: \sy_bookmarks\src\views\options\settings.vue
@@ -12,14 +12,14 @@
     <h2>设置</h2>
     <div>
       <div>思源笔记 url 地址：</div>
-      <input type="text" class="border" v-model="url" />
+      <input type="text" class="border w-96 p-2" v-model="url" />
       <div>默认为：http://192.168.192.110:6806</div>
     </div>
 
     <div>
       <div>思源笔记 API token：</div>
-      <input type="text" class="border" v-model="token" />
-      <div>默认为：http://192.168.192.110:6806</div>
+      <input type="text" class="border w-96 p-2" v-model="token" />
+      <div>打开思源笔记的“设置（alt+p）”，切换至“关于”页签，即可找到</div>
     </div>
 
     <button @click="handleAccess">接入</button>
