@@ -2,14 +2,41 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 08:46:21
- * @LastEditTime: 2021-12-28 10:33:58
+ * @LastEditTime: 2021-12-30 07:29:29
  * @LastEditors: NMTuan
  * @Description: 
  * @FilePath: \sy_bookmarks\src\entry\background.js
  */
-console.log('hello world background todo something~')
-console.log(chrome.bookmarks)
 
+import api from '@/utils/api'
+console.log(api)
+
+// 事件处理
+const handleEvents = {
+    // 添加书签
+    onCreated() {
+        console.log(123)
+        // api.lsNotebooks()
+        //     .then(res => {
+        //         console.log('res', res)
+        //     })
+    }
+}
+
+// 切换事件的监听
+// const changeListener = function (eventName, add) {
+//     console.log('change', eventName, add)
+// }
+
+// 监听来自content-script的消息
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    console.log('收到来自content-script的消息：');
+    console.log(request);
+    console.log(sender);
+    sendResponse(JSON.stringify({
+        a: 1
+    }));
+});
 
 // 点击扩展
 chrome.browserAction.onClicked.addListener(function (tab) {
@@ -36,19 +63,19 @@ chrome.bookmarks.onChildrenReordered.addListener(function (id, reorderInfo) {
 });
 
 // 添加
-chrome.bookmarks.onCreated.addListener(function (id, bookmark) {
-    console.log('onCreated', id, bookmark)
-    // 1340
-    bookmark = {
-        dateAdded: 1640653298335,
-        id: "1342",
-        index: 17,
-        parentId: "459",
-        title: "百度翻译-200种语言互译、沟通全世界！",
-        url: "https://fanyi.baidu.com/"
-    }
+// chrome.bookmarks.onCreated.addListener(function (id, bookmark) {
+//     console.log('onCreated', id, bookmark)
+//     // 1340
+//     bookmark = {
+//         dateAdded: 1640653298335,
+//         id: "1342",
+//         index: 17,
+//         parentId: "459",
+//         title: "百度翻译-200种语言互译、沟通全世界！",
+//         url: "https://fanyi.baidu.com/"
+//     }
 
-});
+// });
 
 // 移动
 chrome.bookmarks.onMoved.addListener(function (id, moveInfo) {
@@ -77,3 +104,32 @@ chrome.bookmarks.onRemoved.addListener(function (id, removeInfo) {
     }
 
 });
+
+
+// 读配置
+chrome.storage.sync.get(
+    [
+        // "baseUrl",
+        // "token",
+        // "noteBooks",
+        // "noteBooksUpdateAt",
+        // "noteBookId",
+        "eventSwitch",
+    ],
+    ({
+        // baseUrl,
+        // token,
+        // noteBooks,
+        // noteBooksUpdateAt,
+        // noteBookId,
+        eventSwitch,
+    }) => {
+        // 初始化事件
+        console.log(eventSwitch)
+        Object.keys(eventSwitch).forEach(key => {
+            if (eventSwitch[key]) {
+                chrome.bookmarks[key].addListener(handleEvents[key])
+            }
+        })
+    }
+);
