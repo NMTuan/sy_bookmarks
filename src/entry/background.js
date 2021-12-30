@@ -2,111 +2,64 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 08:46:21
- * @LastEditTime: 2021-12-30 07:29:29
+ * @LastEditTime: 2021-12-30 15:05:19
  * @LastEditors: NMTuan
- * @Description: 
+ * @Description: 后台
  * @FilePath: \sy_bookmarks\src\entry\background.js
  */
-
-import api from '@/utils/api'
-console.log(api)
+import flat from '@/utils/flat';
 
 // 事件处理
-const handleEvents = {
-    // 添加书签
-    onCreated() {
-        console.log(123)
-        // api.lsNotebooks()
-        //     .then(res => {
-        //         console.log('res', res)
-        //     })
+const handleEvents = {}
+// 循环事件处理的独立文件
+const eventFiles = require.context("./background", true, /\.js$/);
+eventFiles.keys().map(path => {
+    const fileName = path.replace(/^\.\/(.*)\.\w+$/, "$1");
+    handleEvents[fileName] = eventFiles(path).default;
+});
+
+// 消息处理
+const handleMessage = {
+    // 切换事件的监听
+    // 是否对chrome.bookmarks[eventName]开启、关闭事件监听
+    // 监听的处理方法是handleEvents[eventName]
+    changeListener({
+        eventName, // 事件名称
+        add // 是否添加监听
+    }) {
+        const chromeMethod = eventName.split('/').reduce((total, key) => {
+            return total === undefined ? total : total[key]
+        }, chrome)
+        const handleMethod = handleEvents[eventName]
+        // 如果不存在相关方法， 退出
+        if (!chromeMethod || !handleMethod) {
+            return
+        }
+        // 先检测是否已经监听
+        const state = chromeMethod.hasListener(handleMethod)
+        // // 如果已监听， 并且不是添加， 则执行：移除监听
+        if (state && !add) {
+            chromeMethod['removeListener'](handleMethod)
+        }
+        // // 如果未监听， 并且要添加， 则执行：添加监听
+        if (!state && add) {
+            chromeMethod['addListener'](handleMethod)
+        }
     }
 }
 
-// 切换事件的监听
-// const changeListener = function (eventName, add) {
-//     console.log('change', eventName, add)
-// }
-
-// 监听来自content-script的消息
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    console.log('收到来自content-script的消息：');
-    console.log(request);
-    console.log(sender);
-    sendResponse(JSON.stringify({
-        a: 1
-    }));
-});
-
-// 点击扩展
-chrome.browserAction.onClicked.addListener(function (tab) {
-    console.log('onClicked', tab)
-    chrome.runtime.openOptionsPage((res) => {
-        console.log(res)
-    })
-});
-
-// 修改书签
-// 注意： 修改位置时，监听不到
-chrome.bookmarks.onChanged.addListener(function (id, changeInfo) {
-    console.log('onChanged', id, changeInfo)
-    changeInfo = {
-        title: "百度翻译-200种语言互译、沟通全世界！1",
-        url: "https://fanyi.baidu.com/"
+// 监听消息
+// 如果handleMessage中存在action方法，则带payload参数去执行
+chrome.runtime.onMessage.addListener(function ({
+    action, // 动作
+    payload // 数据
+}) {
+    if (handleMessage[action]) {
+        handleMessage[action](payload)
     }
 });
 
-// 顺序改变 没找到触发事件
-chrome.bookmarks.onChildrenReordered.addListener(function (id, reorderInfo) {
-    console.log('onChildrenReordered', id, reorderInfo)
-
-});
-
-// 添加
-// chrome.bookmarks.onCreated.addListener(function (id, bookmark) {
-//     console.log('onCreated', id, bookmark)
-//     // 1340
-//     bookmark = {
-//         dateAdded: 1640653298335,
-//         id: "1342",
-//         index: 17,
-//         parentId: "459",
-//         title: "百度翻译-200种语言互译、沟通全世界！",
-//         url: "https://fanyi.baidu.com/"
-//     }
-
-// });
-
-// 移动
-chrome.bookmarks.onMoved.addListener(function (id, moveInfo) {
-    console.log('onMoved', id, moveInfo)
-    moveInfo = {
-        index: 7,
-        oldIndex: 8,
-        oldParentId: "1",
-        parentId: "1"
-    }
-});
-
-// 移除
-chrome.bookmarks.onRemoved.addListener(function (id, removeInfo) {
-    console.log('onMoved', id, removeInfo)
-    removeInfo = {
-        index: 8,
-        node: {
-            dateAdded: 1640653826094,
-            id: "1343",
-            title: "百度翻译-200种语言互译、沟通全世界！",
-            url: "https://fanyi.baidu.com/",
-        },
-
-        parentId: "1"
-    }
-
-});
-
-
-// 读配置
+// 读本地配置
 chrome.storage.sync.get(
     [
         // "baseUrl",
@@ -114,7 +67,7 @@ chrome.storage.sync.get(
         // "noteBooks",
         // "noteBooksUpdateAt",
         // "noteBookId",
-        "eventSwitch",
+        "listenner",
     ],
     ({
         // baseUrl,
@@ -122,14 +75,21 @@ chrome.storage.sync.get(
         // noteBooks,
         // noteBooksUpdateAt,
         // noteBookId,
-        eventSwitch,
+        listenner,
     }) => {
-        // 初始化事件
-        console.log(eventSwitch)
-        Object.keys(eventSwitch).forEach(key => {
-            if (eventSwitch[key]) {
-                chrome.bookmarks[key].addListener(handleEvents[key])
-            }
+        // 初始化事件， 为开启的配置， 手工执行监听
+        const lestenerFlat = flat(listenner)
+        Object.keys(lestenerFlat || {}).forEach(key => {
+            handleMessage['changeListener']({
+                eventName: key,
+                add: lestenerFlat[key]
+            })
         })
     }
 );
+
+// 手工执行监听：点击扩展图标
+handleMessage['changeListener']({
+    eventName: 'browserAction/onClicked',
+    add: true
+})

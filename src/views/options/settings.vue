@@ -2,10 +2,10 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 13:58:56
- * @LastEditTime: 2021-12-30 07:36:43
+ * @LastEditTime: 2021-12-30 15:09:33
  * @LastEditors: NMTuan
  * @Description: 设置
- * @FilePath: \sy_bookmarks\src\views\options\settings.vue
+ * @FilePath: \sy_bookmarks\src\views\options\Settings.vue
 -->
 <template>
   <div>
@@ -25,8 +25,6 @@
     </div>
     <button @click="lsNotebooks" class="p-2 border">获取笔记本列表</button>
 
-    <hr />
-
     <h3>2. 选择保存位置</h3>
     <ul>
       <li v-for="(item, index) in noteBooks" :key="`nb${index}`">
@@ -41,7 +39,6 @@
         </label>
       </li>
     </ul>
-    <hr />
 
     <h3>3. 同步配置</h3>
     <div>3.1 手工同步：同步目前收藏夹数据至所选笔记本</div>
@@ -50,17 +47,27 @@
       <label>
         <input
           type="checkbox"
-          name="eventSwitch"
-          value="onCreated"
-          v-model="eventSwitch.onCreated"
+          name="listennerBookmarks"
+          v-model="listenner.bookmarks.onCreated"
         />
-        新增书签时，同步至所选笔记本
+        新增书签时，同步至笔记本
       </label>
     </div>
-    <pre>{{ eventSwitch }}</pre>
+    <div>
+      <label>
+        <input
+          type="checkbox"
+          name="listennerBookmarks"
+          v-model="listenner.bookmarks.onRemoved"
+        />
+        删除书签时，同步至笔记本（添加删除标记，并不会删除内容）
+      </label>
+    </div>
+    <pre>{{ listenner }}</pre>
   </div>
 </template>
 <script>
+import flat from "@/utils/flat";
 export default {
   data() {
     return {
@@ -70,11 +77,13 @@ export default {
       noteBooksUpdateAt: 0, //笔记本列表更新时间
       noteBookId: "", // 选中的笔记本
       eventSwitch: {}, // 事件开关
+      // 监听事件
+      listenner: {
+        bookmarks: {},
+      },
     };
   },
   mounted() {
-    // const bg = chrome.extension.getBackgroundPage();
-    // console.log("bg", bg.abc);
     chrome.storage.sync.get(
       [
         "baseUrl",
@@ -82,7 +91,7 @@ export default {
         "noteBooks",
         "noteBooksUpdateAt",
         "noteBookId",
-        "eventSwitch",
+        "listenner",
       ],
       ({
         baseUrl,
@@ -90,14 +99,16 @@ export default {
         noteBooks,
         noteBooksUpdateAt,
         noteBookId,
-        eventSwitch,
+        listenner,
       }) => {
         this.baseUrl = baseUrl || "http://192.168.192.110:6806";
         this.token = token || "";
         this.noteBooks = noteBooks || [];
         this.noteBooksUpdateAt = noteBooksUpdateAt || 0;
         this.noteBookId = noteBookId || "";
-        this.eventSwitch = eventSwitch || {};
+        this.listenner = listenner || {
+          bookmarks: {},
+        };
       }
     );
   },
@@ -127,25 +138,31 @@ export default {
         noteBookId: value,
       });
     },
-    eventSwitchStatus: {
-      deep: true,
-      handler(value, old) {
-        console.log(value, old);
-        // 保存新值
-        chrome.storage.sync.set({
-          eventSwitch: value,
-        });
-        // 循环对比，仅触发变更的事件
-        chrome.runtime.sendMessage({ abc: 123 }, function (response) {
-          console.log("收到来自后台的回复：" + response);
-        });
-      },
+    listennerStatus(value, old) {
+      // 保存新值
+      chrome.storage.sync.set({
+        listenner: value,
+      });
+      const valueFlat = flat(value);
+      const oldFlat = flat(old);
+      // 循环对比，仅触发变更的事件
+      Object.keys(valueFlat).forEach((key) => {
+        if (valueFlat[key] !== oldFlat[key]) {
+          chrome.runtime.sendMessage({
+            action: "changeListener",
+            payload: {
+              eventName: key,
+              add: valueFlat[key],
+            },
+          });
+        }
+      });
     },
   },
   computed: {
-    eventSwitchStatus() {
+    listennerStatus() {
       // 为了watch能对比出变换的 key
-      return JSON.parse(JSON.stringify(this.eventSwitch));
+      return JSON.parse(JSON.stringify(this.listenner));
     },
   },
   methods: {
@@ -164,3 +181,15 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+h2 {
+  @apply font-bold;
+}
+h3 {
+  @apply my-4 font-bold bg-gray-200;
+}
+input,
+button {
+  @apply border-gray-400;
+}
+</style>
