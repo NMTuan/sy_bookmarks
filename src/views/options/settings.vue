@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 13:58:56
- * @LastEditTime: 2021-12-30 15:09:33
+ * @LastEditTime: 2021-12-31 11:39:07
  * @LastEditors: NMTuan
  * @Description: 设置
  * @FilePath: \sy_bookmarks\src\views\options\Settings.vue
@@ -171,7 +171,7 @@ export default {
       this.api
         .lsNotebooks()
         .then((res) => {
-          this.noteBooks = res.data.notebooks;
+          this.noteBooks = res.notebooks;
           this.noteBooksUpdateAt = new Date().getTime();
         })
         .catch((err) => {

@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:04:06
- * @LastEditTime: 2021-12-31 10:39:29
+ * @LastEditTime: 2021-12-31 15:53:11
  * @LastEditors: NMTuan
  * @Description: 移除
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onRemoved.js
@@ -18,7 +18,7 @@ const remove = (id, maxTime = 0) => {
     }
     maxTime--
     api.sql({
-            'stmt': `SELECT * FROM blocks WHERE ial LIKE '%custom-type=\"bookmark\"%custom-id=\"${id}\"%'  LIMIT 1`
+            'stmt': `SELECT * FROM blocks WHERE ial LIKE '%custom-bookMark-id=\"${id}\"%'  LIMIT 1`
         })
         .then(res => {
             // {
@@ -46,16 +46,17 @@ const remove = (id, maxTime = 0) => {
             //         "updated": "20211231101040"
             //     }]
             // }
-            if (res.code !== 0 || res.data.length === 0) {
+            console.log('remove', res, id)
+            if (res.length === 0) {
                 setTimeout(() => {
                     remove(id, maxTime)
                 }, 1000)
                 return
             }
             api.renameDoc({
-                notebook: res.data[0].box,
-                path: res.data[0].path,
-                title: `[已删除]${res.data[0].content}`
+                notebook: res[0].box,
+                path: res[0].path,
+                title: `[已删除]${res[0].content}`
             })
         })
 }
