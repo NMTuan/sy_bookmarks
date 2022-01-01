@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 11:57:11
- * @LastEditTime: 2022-01-01 21:56:52
+ * @LastEditTime: 2022-01-01 22:29:53
  * @LastEditors: NMTuan
  * @Description: 添加书签
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onCreated.js
@@ -69,6 +69,7 @@ export default function (id, bookmark) {
         attrs['custom-bookMark-dateAdded'] = bookmark.dateAdded.toString()
 
         if (isFolder) {
+            attrs['icon'] = '1f4c1'
             attrs['custom-bookMark-dateGroupModified'] =
                 bookmark.dateGroupModified.toString()
         } else {
@@ -78,6 +79,7 @@ export default function (id, bookmark) {
                 maxTime: 10
             })
             attrs['custom-bookMark-url'] = bookmark.url
+            attrs['icon'] = '1f517'
             attrs['custom-bookMark-blockId'] =
                 Array.isArray(blocks) && blocks[0] ? blocks[0].id : ''
         }
