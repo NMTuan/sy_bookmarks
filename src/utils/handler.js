@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-31 08:59:21
- * @LastEditTime: 2022-01-01 21:42:48
+ * @LastEditTime: 2022-01-01 22:14:22
  * @LastEditors: NMTuan
  * @Description:
  * @FilePath: \sy_bookmarks\src\utils\handler.js
@@ -10,17 +10,17 @@
 import api from '@/utils/api'
 
 // url转siyuan存储路径 传参：bookmark对象
-export const url2path = function ({ url, title, parentId }) {
+export const url2path = async function (bookmark) {
+    let { url, title, parentId } = JSON.parse(JSON.stringify(bookmark))
+
     let path = '/'
-    if (parentId === '1') {
-        path += '书签栏/'
+    // 找文档，取文档的hpath，末尾加/，防止多加替换一下。
+    const docs = await findDocsById({ id: parentId, maxTime: 10 })
+    if (docs[0]) {
+        path = `${docs[0].hpath}/`.replace('//', '/')
     }
-    if (parentId === '2') {
-        path += '其它书签/'
-    } else {
-        // TODO 根据parentId找到路径
-    }
-    const reg = /^.*?:\/\/(.*?)\/?$/gi // 过滤掉协议头和最后的/
+    // 过滤掉协议头；过滤掉query参数前面的/；过滤掉query参数；
+    const reg = /^.*?:\/\/(.*?)\/?(\?.*)?$/gi
     // 有url，则用url做路径，没有则用title（文件夹）
     return path + (url ? url.replace(reg, '$1') : title)
 }

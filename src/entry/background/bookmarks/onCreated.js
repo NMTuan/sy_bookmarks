@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 11:57:11
- * @LastEditTime: 2022-01-01 21:41:18
+ * @LastEditTime: 2022-01-01 21:56:52
  * @LastEditors: NMTuan
  * @Description: 添加书签
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onCreated.js
@@ -37,6 +37,7 @@ const findBlocks = ({ id, maxTime = 0 }) => {
 //     }
 
 export default function (id, bookmark) {
+    // console.log(id, bookmark)
     chrome.storage.sync.get(['noteBookId'], async ({ noteBookId }) => {
         if (!noteBookId) {
             // new Error('请先选择保存位置')
@@ -47,7 +48,7 @@ export default function (id, bookmark) {
         // 构建数据体
         const data = {}
         data.notebook = noteBookId
-        data.path = url2path(bookmark)
+        data.path = await url2path(bookmark)
         if (!isFolder) {
             data.markdown = url2md(bookmark.url, bookmark.title)
         } else {
