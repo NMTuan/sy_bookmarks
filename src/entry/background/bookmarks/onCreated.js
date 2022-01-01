@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 11:57:11
- * @LastEditTime: 2022-01-01 14:45:33
+ * @LastEditTime: 2022-01-01 16:46:15
  * @LastEditors: NMTuan
  * @Description: 添加书签
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onCreated.js
@@ -51,39 +51,45 @@ export default function (id, bookmark) {
             return
         }
 
+        const isFolder = !bookmark.url && bookmark.dateGroupModified
+        // 构建数据体
+        const data = {}
+        data.notebook = noteBookId
+        data.path = url2path(bookmark)
+        if (!isFolder) {
+            data.markdown = url2md(bookmark.url, bookmark.title)
+        } else {
+            data.markdown = ''
+        }
         // 插入文档，并创建一个默认块（超链接）
-        const docId = await api.createDocWithMd({
-            notebook: noteBookId,
-            path: url2path(bookmark.url),
-            markdown: url2md(bookmark.url, bookmark.title),
-        })
+        const docId = await api.createDocWithMd(data)
         if (!docId) {
             // new Error('插入文档异常')
             return
         }
 
-        // 找插入的那个默认块
-        const blocks = await findBlocks({
-            id: docId,
-            maxTime: 10
-        })
+        // 设置文档属性
+        const attrs = {};
+        attrs['custom-type'] = 'bookMark'
+        attrs['custom-bookMark-id'] = bookmark.id
+        attrs['custom-bookMark-title'] = bookmark.title.toString()
+        attrs['custom-bookMark-dateAdded'] = bookmark.dateAdded.toString()
 
-        if (blocks.length === 0) {
-            // new Error('没找到默认插入的块')
-            return
+        if (isFolder) {
+            attrs['custom-bookMark-dateGroupModified'] = bookmark.dateGroupModified.toString()
+        } else {
+            // 找插入的那个默认块
+            const blocks = await findBlocks({
+                id: docId,
+                maxTime: 10
+            })
+            attrs['custom-bookMark-url'] = bookmark.url
+            attrs['custom-bookMark-blockId'] = (Array.isArray(blocks) && blocks[0]) ? blocks[0].id : ''
         }
 
-        // 设置文档属性
         await api.setBlockAttrs({
             id: docId,
-            attrs: {
-                'custom-type': 'bookMark',
-                'custom-bookMark-id': bookmark.id,
-                'custom-bookMark-url': bookmark.url,
-                'custom-bookMakr-title': bookmark.title.toString(),
-                'custom-bookMark-dateAdded': bookmark.dateAdded.toString(),
-                'custom-bookMark-blockId': blocks[0].id,
-            }
+            attrs
         })
     })
 }
