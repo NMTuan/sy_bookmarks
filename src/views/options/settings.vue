@@ -2,10 +2,10 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 13:58:56
- * @LastEditTime: 2021-12-31 11:39:07
+ * @LastEditTime: 2022-01-01 15:43:27
  * @LastEditors: NMTuan
  * @Description: 设置
- * @FilePath: \sy_bookmarks\src\views\options\Settings.vue
+ * @FilePath: \sy_bookmarks\src\views\options\settings.vue
 -->
 <template>
   <div>
@@ -63,6 +63,17 @@
         删除书签时，同步至笔记本（添加删除标记，并不会删除内容）
       </label>
     </div>
+    <div>
+      <label>
+        <input
+          type="checkbox"
+          name="listennerBookmarks"
+          v-model="listenner.bookmarks.onChanged"
+        />
+        修改书签时，同步至笔记本（siyuan v1.6.0+）
+      </label>
+    </div>
+
     <pre>{{ listenner }}</pre>
   </div>
 </template>

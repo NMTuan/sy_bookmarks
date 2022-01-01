@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-31 08:59:21
- * @LastEditTime: 2021-12-31 09:14:38
+ * @LastEditTime: 2022-01-01 12:58:30
  * @LastEditors: NMTuan
  * @Description: 
  * @FilePath: \sy_bookmarks\src\utils\handler.js
@@ -19,4 +19,11 @@ export const url2path = function (url, path = '/') {
 
 export const url2md = function (url, title = '') {
     return `[${title || url}](${url})`
+}
+
+// 异步延时
+export const sleep = (fn, payload, timer = 1000) => {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(fn(payload)), timer)
+    })
 }
