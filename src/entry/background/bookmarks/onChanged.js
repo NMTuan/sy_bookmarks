@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:04:26
- * @LastEditTime: 2022-01-01 20:28:30
+ * @LastEditTime: 2022-01-01 20:52:35
  * @LastEditors: NMTuan
  * @Description: 修改
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onChanged.js
@@ -10,6 +10,7 @@
 
 import api from '@/utils/api'
 import {
+    findDocsById,
     url2md,
 } from '@/utils/handler'
 
@@ -20,8 +21,9 @@ import {
 
 export default async function (id, changeInfo) {
     const isFolder = changeInfo.url === undefined
-    const docs = await api.sql({
-        "stmt": `SELECT * FROM blocks WHERE ial LIKE '%custom-bookMark-id=\"${id}\"%' LIMIT 1`
+    const docs = await findDocsById({
+        id,
+        maxTime: 10
     })
 
     if (!docs[0]) {
@@ -66,7 +68,6 @@ export default async function (id, changeInfo) {
         newAttrs['custom-bookMark-blockId'] = attrs['ustom-bookMark-blockId']
     }
 
-    console.log('attr', newAttrs)
     // 更新文档属性
     api.setBlockAttrs({
         id: docs[0].id,

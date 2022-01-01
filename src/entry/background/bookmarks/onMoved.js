@@ -30,7 +30,7 @@ export default async function (id, moveInfo) {
         maxTime: 10
     })
 
-    if (docs.length === 0) {
+    if (!docs[0]) {
         return
     }
 

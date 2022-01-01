@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:04:06
- * @LastEditTime: 2022-01-01 14:36:33
+ * @LastEditTime: 2022-01-01 20:53:40
  * @LastEditors: NMTuan
  * @Description: 移除
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onRemoved.js
@@ -10,38 +10,17 @@
 
 import api from '@/utils/api'
 import {
-    sleep
+    findDocsById,
 } from '@/utils/handler'
 
-// 找文档，新插入的可能无法立即找到
-// 由于新插入思源的数据需要等待一下才能查到，所以这里做了延时重试。
-const findDocs = ({
-    id,
-    maxTime = 0
-}) => {
-    return api.sql({
-            'stmt': `SELECT * FROM blocks WHERE ial LIKE '%custom-bookMark-id=\"${id}\"%'  LIMIT 1`
-        })
-        .then(docs => {
-            //没找到，重试
-            if (docs.length === 0 && maxTime > 0) {
-                maxTime--
-                return sleep(findDocs, {
-                    id,
-                    maxTime
-                })
-            }
-            return docs
-        })
-}
 
 export default async function (id, removeInfo) {
-    const docs = await findDocs({
+    const docs = await findDocsById({
         id,
         maxTime: 10
     })
-    if (docs.length === 0) {
-        // new Error('没找到相关文档')
+
+    if (!docs[0]) {
         return
     }
 
