@@ -2,13 +2,14 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-31 08:59:21
- * @LastEditTime: 2022-01-01 16:39:45
+ * @LastEditTime: 2022-01-01 19:53:48
  * @LastEditors: NMTuan
  * @Description: 
  * @FilePath: \sy_bookmarks\src\utils\handler.js
  */
+import api from '@/utils/api'
 
-// url转siyuan存储路径
+// url转siyuan存储路径 传参：bookmark对象
 export const url2path = function ({
     url,
     title,
@@ -37,4 +38,25 @@ export const sleep = (fn, payload, timer = 1000) => {
     return new Promise((resolve) => {
         setTimeout(() => resolve(fn(payload)), timer)
     })
+}
+
+// 根据 bookmarkId 找到 doc
+export const findDocsById = ({
+    id,
+    maxTime = 0
+}) => {
+    return api.sql({
+            'stmt': `SELECT * FROM blocks WHERE ial LIKE '%custom-bookMark-id=\"${id}\"%'  LIMIT 1`
+        })
+        .then(docs => {
+            //没找到，重试
+            if (docs.length === 0 && maxTime > 0) {
+                maxTime--
+                return sleep(findDocsById, {
+                    id,
+                    maxTime
+                })
+            }
+            return docs
+        })
 }

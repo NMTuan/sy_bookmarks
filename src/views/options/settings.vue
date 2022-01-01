@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 13:58:56
- * @LastEditTime: 2022-01-01 15:43:27
+ * @LastEditTime: 2022-01-01 18:48:20
  * @LastEditors: NMTuan
  * @Description: 设置
  * @FilePath: \sy_bookmarks\src\views\options\settings.vue
@@ -39,6 +39,7 @@
         </label>
       </li>
     </ul>
+    <button @click="init" class="p-2 border">初始化</button>
 
     <h3>3. 同步配置</h3>
     <div>3.1 手工同步：同步目前收藏夹数据至所选笔记本</div>
@@ -73,12 +74,24 @@
         修改书签时，同步至笔记本（siyuan v1.6.0+）
       </label>
     </div>
+    <div>
+      <label>
+        <input
+          type="checkbox"
+          name="listennerBookmarks"
+          v-model="listenner.bookmarks.onMoved"
+        />
+        移动书签时，同步至笔记本
+      </label>
+    </div>
 
     <pre>{{ listenner }}</pre>
   </div>
 </template>
 <script>
 import flat from "@/utils/flat";
+import created from "@/entry/background/bookmarks/onCreated";
+
 export default {
   data() {
     return {
@@ -188,6 +201,25 @@ export default {
         .catch((err) => {
           console.log("err", err);
         });
+    },
+    // 初始化
+    init() {
+      // 插入两个文件夹，书签栏，其它书签
+      const ds = new Date().getTime();
+      created(1, {
+        dateAdded: ds,
+        dateGroupModified: ds,
+        id: "1",
+        title: "书签栏",
+      });
+      setTimeout(() => {
+        created(2, {
+          dateAdded: ds,
+          dateGroupModified: ds,
+          id: "2",
+          title: "其它书签",
+        });
+      }, 1000);
     },
   },
 };

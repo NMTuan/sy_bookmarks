@@ -2,16 +2,15 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:03:40
- * @LastEditTime: 2021-12-31 11:25:35
+ * @LastEditTime: 2022-01-01 19:53:01
  * @LastEditors: NMTuan
  * @Description: 移动
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onMoved.js
  */
-
-// const {
-//     default: api
-// } = require('~/src/utils/api');
-
+import api from '@/utils/api'
+import {
+    findDocsById,
+} from '@/utils/handler'
 
 //     moveInfo = {
 //         index: 7,
@@ -19,6 +18,41 @@
 //         oldParentId: "1",
 //         parentId: "1"
 //     }
-chrome.bookmarks.onMoved.addListener(function (id, moveInfo) {
+export default function (id, moveInfo) {
+    const parentId = moveInfo.parentId
+    if (!parentId) {
+        return
+    }
+    chrome.storage.sync.get(['noteBookId'], async ({
+        noteBookId
+    }) => {
+        if (!noteBookId) {
+            return
+        }
 
-});
+        // 找当前文档
+        const docs = await findDocsById({
+            id,
+            maxTime: 10
+        })
+
+        if (docs.length === 0) {
+            return
+        }
+
+        // 找父文档
+        const parentDocs = await findDocsById({
+            id: parentId
+        })
+
+        if (parentDocs.length === 0) {
+            return
+        }
+        api.moveDoc({
+            fromNotebook: noteBookId,
+            fromPath: docs[0].path,
+            toNotebook: noteBookId,
+            toPath: parentDocs[0].path
+        })
+    })
+}
