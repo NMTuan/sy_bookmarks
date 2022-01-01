@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:03:40
- * @LastEditTime: 2022-01-01 19:53:01
+ * @LastEditTime: 2022-01-01 20:31:23
  * @LastEditors: NMTuan
  * @Description: 移动
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onMoved.js
@@ -18,41 +18,34 @@ import {
 //         oldParentId: "1",
 //         parentId: "1"
 //     }
-export default function (id, moveInfo) {
+export default async function (id, moveInfo) {
     const parentId = moveInfo.parentId
     if (!parentId) {
         return
     }
-    chrome.storage.sync.get(['noteBookId'], async ({
-        noteBookId
-    }) => {
-        if (!noteBookId) {
-            return
-        }
 
-        // 找当前文档
-        const docs = await findDocsById({
-            id,
-            maxTime: 10
-        })
+    // 找当前文档
+    const docs = await findDocsById({
+        id,
+        maxTime: 10
+    })
 
-        if (docs.length === 0) {
-            return
-        }
+    if (docs.length === 0) {
+        return
+    }
 
-        // 找父文档
-        const parentDocs = await findDocsById({
-            id: parentId
-        })
+    // 找父文档
+    const parentDocs = await findDocsById({
+        id: parentId
+    })
 
-        if (parentDocs.length === 0) {
-            return
-        }
-        api.moveDoc({
-            fromNotebook: noteBookId,
-            fromPath: docs[0].path,
-            toNotebook: noteBookId,
-            toPath: parentDocs[0].path
-        })
+    if (parentDocs.length === 0) {
+        return
+    }
+    api.moveDoc({
+        fromNotebook: docs[0].box,
+        fromPath: docs[0].path,
+        toNotebook: docs[0].box,
+        toPath: parentDocs[0].path
     })
 }
