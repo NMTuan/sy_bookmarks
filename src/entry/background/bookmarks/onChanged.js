@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:04:26
- * @LastEditTime: 2022-01-01 21:41:12
+ * @LastEditTime: 2022-01-01 22:31:52
  * @LastEditors: NMTuan
  * @Description: 修改
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onChanged.js
@@ -33,10 +33,7 @@ export default async function (id, changeInfo) {
     })
 
     const newAttrs = {}
-    newAttrs['custom-type'] = 'bookMark'
-    newAttrs['custom-bookMark-id'] = attrs['custom-bookMark-id']
     newAttrs['custom-bookMark-title'] = changeInfo.title
-    newAttrs['custom-bookMark-dateAdded'] = attrs['custom-bookMark-dateAdded']
 
     if (isFolder) {
         // 文件夹要重命名
@@ -45,9 +42,6 @@ export default async function (id, changeInfo) {
             path: docs[0].path,
             title: changeInfo.title
         })
-
-        newAttrs['custom-bookMark-dateGroupModified'] =
-            attrs['custom-bookMark-dateGroupModified']
     } else {
         // 文档要修改block
         // 找文档中，记录超链接的块id
@@ -63,7 +57,6 @@ export default async function (id, changeInfo) {
         })
 
         newAttrs['custom-bookMark-url'] = changeInfo.url
-        newAttrs['custom-bookMark-blockId'] = attrs['ustom-bookMark-blockId']
     }
 
     // 更新文档属性
