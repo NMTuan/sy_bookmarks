@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 20:28:02
- * @LastEditTime: 2022-01-01 21:42:34
+ * @LastEditTime: 2022-01-01 23:14:58
  * @LastEditors: NMTuan
  * @Description: 异步
  * @FilePath: \sy_bookmarks\src\utils\fetch.js
@@ -34,7 +34,7 @@ export default function (url, params = {}) {
                     }
                 })
                 .then((res) => {
-                    console.log('fetch', res)
+                    // console.log('fetch', res)
                     // TODO 统一错误处理
                     if (res.code !== 0) {
                         reject(new Error(res.msg))

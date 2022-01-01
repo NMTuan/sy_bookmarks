@@ -2,11 +2,14 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 14:50:52
- * @LastEditTime: 2022-01-01 21:42:40
+ * @LastEditTime: 2022-01-01 22:48:02
  * @LastEditors: NMTuan
- * @Description: 把对象拍平
+ * @Description: 拍平
  * @FilePath: \sy_bookmarks\src\utils\flat.js
  */
+
+// 把对象拍平
+
 // {
 //     a: {
 //         b: {
@@ -22,12 +25,11 @@
 //     'a/b/c/d': 1,
 //     'a/e': 2
 // }
-
-const flat = function (data = {}, parent = '', total = {}) {
+export const faltObject = function (data = {}, parent = '', total = {}) {
     return Object.keys(data).reduce((total, key) => {
         const p = !parent ? key : `${parent}/${key}`
         if (typeof data[key] === 'object') {
-            flat(data[key], p, total)
+            faltObject(data[key], p, total)
         } else {
             total[p] = data[key]
         }
@@ -35,4 +37,16 @@ const flat = function (data = {}, parent = '', total = {}) {
     }, total)
 }
 
-export default flat
+// 把数组拍平
+// [children: []]
+export const faltArray = (tree, total = [], childrenKey = 'children') => {
+    return tree.reduce((total, item) => {
+        if (item[childrenKey]) {
+            faltArray(item[childrenKey], total)
+        }
+        const clone = JSON.parse(JSON.stringify(item))
+        delete clone[childrenKey]
+        total.push(clone)
+        return total
+    }, total)
+}

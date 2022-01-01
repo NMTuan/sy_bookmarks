@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 13:58:56
- * @LastEditTime: 2022-01-01 21:42:57
+ * @LastEditTime: 2022-01-01 23:11:52
  * @LastEditors: NMTuan
  * @Description: 设置
  * @FilePath: \sy_bookmarks\src\views\options\settings.vue
@@ -90,9 +90,9 @@
     </div>
 </template>
 <script>
-    import flat from '@/utils/flat'
+    import { faltObject, faltArray } from '@/utils/flat'
     import created from '@/entry/background/bookmarks/onCreated'
-    import handerSync from '@/utils/sync'
+    import { insertDocWithBookmarks } from '@/utils/handler'
 
     export default {
         data() {
@@ -169,8 +169,8 @@
                 chrome.storage.sync.set({
                     listenner: value
                 })
-                const valueFlat = flat(value)
-                const oldFlat = flat(old)
+                const valueFlat = faltObject(value)
+                const oldFlat = faltObject(old)
                 // 循环对比，仅触发变更的事件
                 Object.keys(valueFlat).forEach((key) => {
                     if (valueFlat[key] !== oldFlat[key]) {
@@ -225,9 +225,13 @@
                 }, 1000)
             },
             sync() {
-                console.log('sync')
                 chrome.bookmarks.getTree((res) => {
-                    handerSync(res)
+                    const bookmarks = faltArray(res)
+                    bookmarks.sort((a, b) => {
+                        return a.id - b.id
+                    })
+                    console.log(bookmarks)
+                    insertDocWithBookmarks({ bookmarks })
                 })
             }
         }

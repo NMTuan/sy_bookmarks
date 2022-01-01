@@ -7,7 +7,7 @@
  * @Description: 后台
  * @FilePath: \sy_bookmarks\src\entry\background.js
  */
-import flat from '@/utils/flat'
+import { faltObject } from '@/utils/flat'
 
 // 事件处理
 const handleEvents = {}
@@ -78,7 +78,7 @@ chrome.storage.sync.get(
         listenner
     }) => {
         // 初始化事件， 为开启的配置， 手工执行监听
-        const lestenerFlat = flat(listenner)
+        const lestenerFlat = faltObject(listenner)
         Object.keys(lestenerFlat || {}).forEach((key) => {
             handleMessage['changeListener']({
                 eventName: key,
