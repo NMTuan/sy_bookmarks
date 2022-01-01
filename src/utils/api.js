@@ -43,6 +43,13 @@ const api = {
     // 上传资源文件
     upload: '/api/asset/upload',
 
+    // 插入块
+    insertBlock: '/api/block/insertBlock',
+    // 更新快
+    updateBlock: '/api/block/updateBlock',
+    // 删除块
+    deleteBlock: '/api/block/deleteBlock',
+
     // 设置块属性
     setBlockAttrs: '/api/attr/setBlockAttrs',
     // 获取块属性
