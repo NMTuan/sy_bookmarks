@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:04:06
- * @LastEditTime: 2022-01-01 12:59:45
+ * @LastEditTime: 2022-01-01 14:36:33
  * @LastEditors: NMTuan
  * @Description: 移除
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onRemoved.js
@@ -15,7 +15,7 @@ import {
 
 // 找文档，新插入的可能无法立即找到
 // 由于新插入思源的数据需要等待一下才能查到，所以这里做了延时重试。
-const findDoc = ({
+const findDocs = ({
     id,
     maxTime = 0
 }) => {
@@ -26,7 +26,7 @@ const findDoc = ({
             //没找到，重试
             if (docs.length === 0 && maxTime > 0) {
                 maxTime--
-                return sleep(findDoc, {
+                return sleep(findDocs, {
                     id,
                     maxTime
                 })
@@ -36,11 +36,12 @@ const findDoc = ({
 }
 
 export default async function (id, removeInfo) {
-    const docs = await findDoc({
+    const docs = await findDocs({
         id,
         maxTime: 10
     })
     if (docs.length === 0) {
+        // new Error('没找到相关文档')
         return
     }
 
