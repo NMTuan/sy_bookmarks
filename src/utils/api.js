@@ -69,9 +69,7 @@ const api = {
     version: '/api/system/version',
     // 获取系统当前时间
     currentTime: '/api/system/currentTime'
-
 }
-
 
 export default Object.keys(api).reduce((total, key) => {
     total[key] = (params) => fetch(api[key], params)

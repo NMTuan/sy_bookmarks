@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 20:28:02
- * @LastEditTime: 2022-01-01 18:47:20
+ * @LastEditTime: 2022-01-01 21:42:34
  * @LastEditors: NMTuan
  * @Description: 异步
  * @FilePath: \sy_bookmarks\src\utils\fetch.js
@@ -10,10 +10,7 @@
 
 export default function (url, params = {}) {
     return new Promise((resolve, reject) => {
-        chrome.storage.sync.get(['baseUrl', 'token'], ({
-            baseUrl,
-            token
-        }) => {
+        chrome.storage.sync.get(['baseUrl', 'token'], ({ baseUrl, token }) => {
             if (!baseUrl) {
                 reject(new Error('missing siyuan api url'))
                 return
@@ -23,12 +20,12 @@ export default function (url, params = {}) {
                 return
             }
             fetch(baseUrl + url, {
-                    method: 'post',
-                    headers: {
-                        Authorization: 'Token ' + token,
-                    },
-                    body: JSON.stringify(params),
-                })
+                method: 'post',
+                headers: {
+                    Authorization: 'Token ' + token
+                },
+                body: JSON.stringify(params)
+            })
                 .then((res) => {
                     if (res.status === 200) {
                         return res.json()
@@ -40,9 +37,7 @@ export default function (url, params = {}) {
                     console.log('fetch', res)
                     // TODO 统一错误处理
                     if (res.code !== 0) {
-                        reject(
-                            new Error(res.msg)
-                        )
+                        reject(new Error(res.msg))
                     } else {
                         resolve(res.data)
                     }

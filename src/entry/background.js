@@ -2,21 +2,21 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 08:46:21
- * @LastEditTime: 2021-12-30 15:05:19
+ * @LastEditTime: 2022-01-01 21:41:49
  * @LastEditors: NMTuan
  * @Description: 后台
  * @FilePath: \sy_bookmarks\src\entry\background.js
  */
-import flat from '@/utils/flat';
+import flat from '@/utils/flat'
 
 // 事件处理
 const handleEvents = {}
 // 循环事件处理的独立文件
-const eventFiles = require.context("./background", true, /\.js$/);
-eventFiles.keys().map(path => {
-    const fileName = path.replace(/^\.\/(.*)\.\w+$/, "$1");
-    handleEvents[fileName] = eventFiles(path).default;
-});
+const eventFiles = require.context('./background', true, /\.js$/)
+eventFiles.keys().map((path) => {
+    const fileName = path.replace(/^\.\/(.*)\.\w+$/, '$1')
+    handleEvents[fileName] = eventFiles(path).default
+})
 
 // 消息处理
 const handleMessage = {
@@ -57,7 +57,7 @@ chrome.runtime.onMessage.addListener(function ({
     if (handleMessage[action]) {
         handleMessage[action](payload)
     }
-});
+})
 
 // 读本地配置
 chrome.storage.sync.get(
@@ -67,7 +67,7 @@ chrome.storage.sync.get(
         // "noteBooks",
         // "noteBooksUpdateAt",
         // "noteBookId",
-        "listenner",
+        'listenner'
     ],
     ({
         // baseUrl,
@@ -75,18 +75,18 @@ chrome.storage.sync.get(
         // noteBooks,
         // noteBooksUpdateAt,
         // noteBookId,
-        listenner,
+        listenner
     }) => {
         // 初始化事件， 为开启的配置， 手工执行监听
         const lestenerFlat = flat(listenner)
-        Object.keys(lestenerFlat || {}).forEach(key => {
+        Object.keys(lestenerFlat || {}).forEach((key) => {
             handleMessage['changeListener']({
                 eventName: key,
                 add: lestenerFlat[key]
             })
         })
     }
-);
+)
 
 // 手工执行监听：点击扩展图标
 handleMessage['changeListener']({

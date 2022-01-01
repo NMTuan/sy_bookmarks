@@ -2,15 +2,13 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:03:40
- * @LastEditTime: 2022-01-01 20:31:23
+ * @LastEditTime: 2022-01-01 21:41:24
  * @LastEditors: NMTuan
  * @Description: 移动
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onMoved.js
  */
 import api from '@/utils/api'
-import {
-    findDocsById,
-} from '@/utils/handler'
+import { findDocsById } from '@/utils/handler'
 
 //     moveInfo = {
 //         index: 7,

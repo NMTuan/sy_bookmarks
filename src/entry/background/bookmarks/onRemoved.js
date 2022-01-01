@@ -2,17 +2,14 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:04:06
- * @LastEditTime: 2022-01-01 20:53:40
+ * @LastEditTime: 2022-01-01 21:41:29
  * @LastEditors: NMTuan
  * @Description: 移除
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onRemoved.js
  */
 
 import api from '@/utils/api'
-import {
-    findDocsById,
-} from '@/utils/handler'
-
+import { findDocsById } from '@/utils/handler'
 
 export default async function (id, removeInfo) {
     const docs = await findDocsById({

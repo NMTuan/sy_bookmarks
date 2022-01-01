@@ -2,17 +2,14 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:04:26
- * @LastEditTime: 2022-01-01 20:52:35
+ * @LastEditTime: 2022-01-01 21:41:12
  * @LastEditors: NMTuan
  * @Description: 修改
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onChanged.js
  */
 
 import api from '@/utils/api'
-import {
-    findDocsById,
-    url2md,
-} from '@/utils/handler'
+import { findDocsById, url2md } from '@/utils/handler'
 
 //     changeInfo = {
 //         title: "百度翻译-200种语言互译、沟通全世界！1",
@@ -44,12 +41,13 @@ export default async function (id, changeInfo) {
     if (isFolder) {
         // 文件夹要重命名
         api.renameDoc({
-            'notebook': docs[0].box,
-            'path': docs[0].path,
-            'title': changeInfo.title
+            notebook: docs[0].box,
+            path: docs[0].path,
+            title: changeInfo.title
         })
 
-        newAttrs['custom-bookMark-dateGroupModified'] = attrs['custom-bookMark-dateGroupModified']
+        newAttrs['custom-bookMark-dateGroupModified'] =
+            attrs['custom-bookMark-dateGroupModified']
     } else {
         // 文档要修改block
         // 找文档中，记录超链接的块id
