@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:04:26
- * @LastEditTime: 2022-01-01 15:41:00
+ * @LastEditTime: 2022-01-01 20:28:30
  * @LastEditors: NMTuan
  * @Description: 修改
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onChanged.js
@@ -19,6 +19,7 @@ import {
 //     }
 
 export default async function (id, changeInfo) {
+    const isFolder = changeInfo.url === undefined
     const docs = await api.sql({
         "stmt": `SELECT * FROM blocks WHERE ial LIKE '%custom-bookMark-id=\"${id}\"%' LIMIT 1`
     })
@@ -32,28 +33,43 @@ export default async function (id, changeInfo) {
         id: docs[0].id
     })
 
-    // 找文档中，记录超链接的块id
-    if (!attrs['custom-bookMark-blockId']) {
-        return
+    const newAttrs = {}
+    newAttrs['custom-type'] = 'bookMark'
+    newAttrs['custom-bookMark-id'] = attrs['custom-bookMark-id']
+    newAttrs['custom-bookMark-title'] = changeInfo.title
+    newAttrs['custom-bookMark-dateAdded'] = attrs['custom-bookMark-dateAdded']
+
+    if (isFolder) {
+        // 文件夹要重命名
+        api.renameDoc({
+            'notebook': docs[0].box,
+            'path': docs[0].path,
+            'title': changeInfo.title
+        })
+
+        newAttrs['custom-bookMark-dateGroupModified'] = attrs['custom-bookMark-dateGroupModified']
+    } else {
+        // 文档要修改block
+        // 找文档中，记录超链接的块id
+        if (!attrs['custom-bookMark-blockId']) {
+            return
+        }
+
+        // 更新块的内容
+        api.updateBlock({
+            id: attrs['custom-bookMark-blockId'],
+            dataType: 'markdown',
+            data: url2md(changeInfo.url, changeInfo.title)
+        })
+
+        newAttrs['custom-bookMark-url'] = changeInfo.url
+        newAttrs['custom-bookMark-blockId'] = attrs['ustom-bookMark-blockId']
     }
 
-    // 更新块的内容
-    api.updateBlock({
-        id: attrs['custom-bookMark-blockId'],
-        dataType: 'markdown',
-        data: url2md(changeInfo.url, changeInfo.title)
-    })
-
+    console.log('attr', newAttrs)
     // 更新文档属性
     api.setBlockAttrs({
         id: docs[0].id,
-        attrs: {
-            'custom-type': 'bookMark',
-            'custom-bookMark-id': attrs['custom-bookMark-id'],
-            'custom-bookMark-url': changeInfo.url,
-            'custom-bookMakr-title': changeInfo.title,
-            'custom-bookMark-dateAdded': attrs['custom-bookMark-dateAdded'],
-            'custom-bookMark-blockId': attrs['ustom-bookMark-blockId'],
-        }
+        attrs: newAttrs
     })
 }
