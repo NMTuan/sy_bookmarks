@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-31 08:59:21
- * @LastEditTime: 2022-01-02 21:31:44
+ * @LastEditTime: 2022-01-02 22:18:25
  * @LastEditors: NMTuan
  * @Description:
  * @FilePath: \sy_bookmarks\src\utils\handler.js
@@ -85,8 +85,9 @@ const findChildBlocksById = ({ id, maxTime = 0 }) => {
 
 // 循环插入文档
 export const insertDocWithBookmarks = async ({ bookmarks, index = 0 }) => {
+    window.postMessage({ syncIndex: index }, '*')
     if (index >= bookmarks.length) {
-        return
+        return 
     }
     // 跳过root
     if (bookmarks[index].id === '0') {
@@ -112,8 +113,11 @@ export const insertDocWithBookmarks = async ({ bookmarks, index = 0 }) => {
         })
         return
     }
+    console.log('开始插入')
     await insertDoc(bookmarks[index])
-    sleep(insertDocWithBookmarks, {
+    console.log('插入完毕')
+    console.log('------------------')
+    return sleep(await insertDocWithBookmarks, {
         bookmarks,
         index: ++index
     })
@@ -137,10 +141,10 @@ const getStorage = (payload = []) => {
 
 // 插入文档
 export const insertDoc = async (bookmark) => {
-    const d = new Date().getTime()
-    console.log('开始写入', new Date().getTime() - d)
+    // const d = new Date().getTime()
+    // console.log('开始写入', new Date().getTime() - d)
     const { noteBookId } = await getStorage(['noteBookId'])
-    console.log('取笔记本', new Date().getTime() - d)
+    // console.log('取笔记本', new Date().getTime() - d)
     if (!noteBookId) {
         return
     }
@@ -149,18 +153,18 @@ export const insertDoc = async (bookmark) => {
     // 构建数据体
     const data = {}
     data.notebook = noteBookId
-    console.log('url2path 1', new Date().getTime() - d)
+    // console.log('url2path 1', new Date().getTime() - d)
     data.path = await url2path(bookmark)
-    console.log('url2path 2', new Date().getTime() - d)
+    // console.log('url2path 2', new Date().getTime() - d)
     if (isFolder) {
         data.markdown = ''
     } else {
         data.markdown = url2md(bookmark.url, bookmark.title)
     }
     // 插入文档，并创建一个默认块（超链接）
-    console.log('createDocWithMd 1', new Date().getTime() - d)
+    // console.log('createDocWithMd 1', new Date().getTime() - d)
     const docId = await api.createDocWithMd(data)
-    console.log('createDocWithMd 2', new Date().getTime() - d)
+    // console.log('createDocWithMd 2', new Date().getTime() - d)
     if (!docId) {
         // new Error('插入文档异常')
         return
@@ -178,13 +182,13 @@ export const insertDoc = async (bookmark) => {
         attrs['custom-bookMark-dateGroupModified'] =
             bookmark.dateGroupModified.toString()
     } else {
-        console.log('findChildBlocksById 2', new Date().getTime() - d)
+        // console.log('findChildBlocksById 2', new Date().getTime() - d)
         // 找插入的那个默认块
         const blocks = await findChildBlocksById({
             id: docId,
             maxTime: 10
         })
-        console.log('findChildBlocksById 2', new Date().getTime() - d)
+        // console.log('findChildBlocksById 2', new Date().getTime() - d)
 
         attrs['custom-bookMark-url'] = bookmark.url
         attrs['icon'] = '1f517'
@@ -192,11 +196,11 @@ export const insertDoc = async (bookmark) => {
             Array.isArray(blocks) && blocks[0] ? blocks[0].id : ''
     }
 
-    console.log('setBlockAttrs', new Date().getTime() - d)
-    await api.setBlockAttrs({
+    // console.log('setBlockAttrs', new Date().getTime() - d)
+    return await api.setBlockAttrs({
         id: docId,
         attrs
     })
-    console.log('写入完毕', new Date().getTime() - d)
-    console.log('------------------')
+    // console.log('写入完毕', new Date().getTime() - d)
+    // console.log('------------------')
 }

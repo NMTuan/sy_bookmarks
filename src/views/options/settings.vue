@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 13:58:56
- * @LastEditTime: 2022-01-02 21:35:44
+ * @LastEditTime: 2022-01-02 22:28:47
  * @LastEditors: NMTuan
  * @Description: 设置
  * @FilePath: \sy_bookmarks\src\views\options\settings.vue
@@ -25,7 +25,7 @@
         </div>
         <button @click="lsNotebooks" class="p-2 border">获取笔记本列表</button>
 
-        <h3>2. 选择保存位置</h3>
+        <h3>2. 选择保存位置 ({{ syncIndex }} / {{ syncMax }})</h3>
         <ul>
             <li v-for="(item, index) in noteBooks" :key="`nb${index}`">
                 <label>
@@ -105,7 +105,9 @@ export default {
             // 监听事件
             listenner: {
                 bookmarks: {}
-            }
+            },
+            syncMax: 0,
+            syncIndex: 0
         }
     },
     mounted() {
@@ -135,6 +137,19 @@ export default {
                     bookmarks: {}
                 }
             }
+        )
+
+        // 接收其它脚本发来的事件
+        window.addEventListener(
+            'message',
+            (e) => {
+                const data = e.data || {}
+                // 更新同步进度
+                if (data.syncIndex !== undefined) {
+                    this.syncIndex = data.syncIndex
+                }
+            },
+            false
         )
     },
     watch: {
@@ -206,7 +221,8 @@ export default {
         // 初始化笔记本
         init() {
             // 插入两个文件夹，书签栏，其它书签
-            chrome.bookmarks.getChildren('0', (bookmarks) => {
+            chrome.bookmarks.getChildren('0', async (bookmarks) => {
+                this.syncMax = bookmarks.length
                 bookmarks.sort((a, b) => {
                     return a.id - b.id
                 })
@@ -215,12 +231,12 @@ export default {
         },
         // 同步所有书签
         sync() {
-            chrome.bookmarks.getTree((res) => {
+            chrome.bookmarks.getTree(async (res) => {
                 const bookmarks = faltArray(res)
+                this.syncMax = bookmarks.length
                 bookmarks.sort((a, b) => {
                     return a.id - b.id
                 })
-                console.log(bookmarks)
                 insertDocWithBookmarks({ bookmarks })
             })
         }
