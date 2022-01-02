@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-31 08:59:21
- * @LastEditTime: 2022-01-01 23:37:18
+ * @LastEditTime: 2022-01-02 18:12:08
  * @LastEditors: NMTuan
  * @Description:
  * @FilePath: \sy_bookmarks\src\utils\handler.js
@@ -15,9 +15,15 @@ export const url2path = async function (bookmark) {
 
     let path = '/'
     // 找文档，取文档的hpath，末尾加/，防止多加替换一下。
-    const docs = await findDocsById({ id: parentId, maxTime: 10 })
-    if (docs[0]) {
-        path = `${docs[0].hpath}/`.replace('//', '/')
+    // 0的是根目录，不用找
+    if (parentId !== '0') {
+        const docs = await findDocsById({
+            id: parentId,
+            maxTime: 10
+        })
+        if (docs[0]) {
+            path = `${docs[0].hpath}/`.replace('//', '/')
+        }
     }
     // 过滤掉协议头；过滤掉query参数前面的/；过滤掉query参数；
     const reg = /^.*?:\/\/(.*?)\/?(\?.*)?$/gi
@@ -81,22 +87,33 @@ export const insertDocWithBookmarks = async ({ bookmarks, index = 0 }) => {
     }
     // 跳过root
     if (bookmarks[index].id === '0') {
-        await insertDocWithBookmarks({ bookmarks, index: ++index })
+        await insertDocWithBookmarks({
+            bookmarks,
+            index: ++index
+        })
         return
     }
     console.log('------------------')
     console.log('开始同步第几条：', index)
-    const findDocs = await findDocsById({ id: bookmarks[index].id })
-    console.log('是否已存在：', findDocs)
+    const findDocs = await findDocsById({
+        id: bookmarks[index].id
+    })
+    console.log('是否已存在：', findDocs.length)
     // 如果存在，不延时，直接下一条
     if (findDocs.length > 0) {
         console.log('跳过')
         console.log('------------------')
-        await insertDocWithBookmarks({ bookmarks, index: ++index })
+        await insertDocWithBookmarks({
+            bookmarks,
+            index: ++index
+        })
         return
     }
     await insertDoc(bookmarks[index])
-    sleep(insertDocWithBookmarks, { bookmarks, index: ++index })
+    sleep(insertDocWithBookmarks, {
+        bookmarks,
+        index: ++index
+    })
 }
 
 const getNoteBookId = () => {
@@ -109,8 +126,10 @@ const getNoteBookId = () => {
 
 // 插入文档
 export const insertDoc = async (bookmark) => {
-    console.log('开始写入')
+    const d = new Date().getTime()
+    console.log('开始写入', new Date().getTime() - d)
     const noteBookId = await getNoteBookId()
+    console.log('取笔记本', new Date().getTime() - d)
     if (!noteBookId) {
         return
     }
@@ -119,14 +138,18 @@ export const insertDoc = async (bookmark) => {
     // 构建数据体
     const data = {}
     data.notebook = noteBookId
+    console.log('url2path 1', new Date().getTime() - d)
     data.path = await url2path(bookmark)
+    console.log('url2path 2', new Date().getTime() - d)
     if (isFolder) {
         data.markdown = ''
     } else {
         data.markdown = url2md(bookmark.url, bookmark.title)
     }
     // 插入文档，并创建一个默认块（超链接）
+    console.log('createDocWithMd 1', new Date().getTime() - d)
     const docId = await api.createDocWithMd(data)
+    console.log('createDocWithMd 2', new Date().getTime() - d)
     if (!docId) {
         // new Error('插入文档异常')
         return
@@ -144,11 +167,13 @@ export const insertDoc = async (bookmark) => {
         attrs['custom-bookMark-dateGroupModified'] =
             bookmark.dateGroupModified.toString()
     } else {
+        console.log('findChildBlocksById 2', new Date().getTime() - d)
         // 找插入的那个默认块
         const blocks = await findChildBlocksById({
             id: docId,
             maxTime: 10
         })
+        console.log('findChildBlocksById 2', new Date().getTime() - d)
 
         attrs['custom-bookMark-url'] = bookmark.url
         attrs['icon'] = '1f517'
@@ -156,10 +181,11 @@ export const insertDoc = async (bookmark) => {
             Array.isArray(blocks) && blocks[0] ? blocks[0].id : ''
     }
 
+    console.log('setBlockAttrs', new Date().getTime() - d)
     await api.setBlockAttrs({
         id: docId,
         attrs
     })
-    console.log('写入完毕')
+    console.log('写入完毕', new Date().getTime() - d)
     console.log('------------------')
 }
