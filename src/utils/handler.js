@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-31 08:59:21
- * @LastEditTime: 2022-01-02 21:23:33
+ * @LastEditTime: 2022-01-02 21:31:44
  * @LastEditors: NMTuan
  * @Description:
  * @FilePath: \sy_bookmarks\src\utils\handler.js
@@ -49,6 +49,7 @@ export const findDocsById = async ({ id, maxTime = 0 }) => {
     const { noteBookId } = await getStorage(['noteBookId'])
     return api
         .sql({
+            // eslint-disable-next-line no-useless-escape
             stmt: `SELECT * FROM blocks WHERE box = '${noteBookId}' AND ial LIKE '%custom-bookMark-id=\"${id}\"%'  LIMIT 1`
         })
         .then(async (docs) => {
