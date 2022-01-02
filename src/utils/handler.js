@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-31 08:59:21
- * @LastEditTime: 2022-01-02 20:47:17
+ * @LastEditTime: 2022-01-02 21:23:33
  * @LastEditors: NMTuan
  * @Description:
  * @FilePath: \sy_bookmarks\src\utils\handler.js
@@ -25,7 +25,7 @@ export const url2path = async function (bookmark) {
             path = `${docs[0].hpath}/`.replace('//', '/')
         }
     }
-    return path + title.replaceAll('/', '-')    // 斜杠为目录，所以要过滤掉title中的斜杠
+    return path + title.replaceAll('/', '-') // 斜杠为目录，所以要过滤掉title中的斜杠
     // 过滤掉协议头；过滤掉query参数前面的/；过滤掉query参数；
     // const reg = /^.*?:\/\/(.*?)\/?(\?.*)?$/gi
     // 有url，则用url做路径，没有则用title（文件夹）
@@ -45,16 +45,17 @@ export const sleep = (fn, payload, timer = 1000) => {
 }
 
 // 根据 bookmarkId 找到 doc
-export const findDocsById = ({ id, maxTime = 0 }) => {
+export const findDocsById = async ({ id, maxTime = 0 }) => {
+    const { noteBookId } = await getStorage(['noteBookId'])
     return api
         .sql({
-            stmt: `SELECT * FROM blocks WHERE ial LIKE '%custom-bookMark-id=\"${id}\"%'  LIMIT 1`
+            stmt: `SELECT * FROM blocks WHERE box = '${noteBookId}' AND ial LIKE '%custom-bookMark-id=\"${id}\"%'  LIMIT 1`
         })
-        .then((docs) => {
+        .then(async (docs) => {
             //没找到，重试
             if (docs.length === 0 && maxTime > 0) {
                 maxTime--
-                return sleep(findDocsById, {
+                return sleep(await findDocsById, {
                     id,
                     maxTime
                 })
@@ -117,19 +118,27 @@ export const insertDocWithBookmarks = async ({ bookmarks, index = 0 }) => {
     })
 }
 
-const getNoteBookId = () => {
+// 把chrome.storage.sync.get的方法转为promise
+const getStorage = (payload = []) => {
     return new Promise((resolve) => {
-        chrome.storage.sync.get(['noteBookId'], ({ noteBookId }) => {
-            resolve(noteBookId)
+        chrome.storage.sync.get(payload, (res) => {
+            resolve(res)
         })
     })
 }
+// const setStorage = (payload = []) => {
+//     return new Promise((resolve) => {
+//         chrome.storage.sync.set(payload, (res) => {
+//             resolve(res)
+//         })
+//     })
+// }
 
 // 插入文档
 export const insertDoc = async (bookmark) => {
     const d = new Date().getTime()
     console.log('开始写入', new Date().getTime() - d)
-    const noteBookId = await getNoteBookId()
+    const { noteBookId } = await getStorage(['noteBookId'])
     console.log('取笔记本', new Date().getTime() - d)
     if (!noteBookId) {
         return
