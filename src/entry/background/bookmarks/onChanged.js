@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-30 15:04:26
- * @LastEditTime: 2022-01-01 22:31:52
+ * @LastEditTime: 2022-01-02 20:38:11
  * @LastEditors: NMTuan
  * @Description: 修改
  * @FilePath: \sy_bookmarks\src\entry\background\bookmarks\onChanged.js
@@ -35,14 +35,13 @@ export default async function (id, changeInfo) {
     const newAttrs = {}
     newAttrs['custom-bookMark-title'] = changeInfo.title
 
-    if (isFolder) {
-        // 文件夹要重命名
-        api.renameDoc({
-            notebook: docs[0].box,
-            path: docs[0].path,
-            title: changeInfo.title
-        })
-    } else {
+    api.renameDoc({
+        notebook: docs[0].box,
+        path: docs[0].path,
+        title: changeInfo.title
+    })
+
+    if (!isFolder) {
         // 文档要修改block
         // 找文档中，记录超链接的块id
         if (!attrs['custom-bookMark-blockId']) {
