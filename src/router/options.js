@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 13:48:49
- * @LastEditTime: 2022-01-01 21:42:09
+ * @LastEditTime: 2022-01-03 14:37:40
  * @LastEditors: NMTuan
  * @Description:
  * @FilePath: \sy_bookmarks\src\router\options.js
@@ -15,13 +15,23 @@ Vue.use(VueRouter)
 const routes = [
     {
         path: '/',
-        name: 'Index',
+        name: '设置',
         component: () => import('../views/options/index.vue')
     },
     {
-        path: '/settings',
-        name: 'Settings',
-        component: () => import('../views/options/settings.vue')
+        path: '/about',
+        name: '关于',
+        component: () => import('../views/options/about.vue')
+    },
+    {
+        path: '/roadmap',
+        name: '蓝图',
+        component: () => import('../views/options/roadmap.vue')
+    },
+    {
+        path: '/log',
+        name: '日志',
+        component: () => import('../views/options/log.vue')
     }
 ]
 

@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "sy_bookmarks",
+    "name": "思源书签",
     "description": "基于思源笔记api，同步浏览器的书签至思源笔记，做到数据集中式管理。",
     "version": "1.1.0",
     "icons": {
@@ -16,9 +16,9 @@
     },
     "browser_action": {
         "default_icon": "/assets/icon16.png",
-        "default_title": "配置思源书签"
+        "default_title": "思源书签"
     },
-    "options_page": "options.html#settings",
+    "options_page": "options.html",
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "permissions": [
         "storage",

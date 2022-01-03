@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 08:46:21
- * @LastEditTime: 2022-01-01 21:41:49
+ * @LastEditTime: 2022-01-03 19:17:26
  * @LastEditors: NMTuan
  * @Description: 后台
  * @FilePath: \sy_bookmarks\src\entry\background.js
@@ -60,33 +60,16 @@ chrome.runtime.onMessage.addListener(function ({
 })
 
 // 读本地配置
-chrome.storage.sync.get(
-    [
-        // "baseUrl",
-        // "token",
-        // "noteBooks",
-        // "noteBooksUpdateAt",
-        // "noteBookId",
-        'listenner'
-    ],
-    ({
-        // baseUrl,
-        // token,
-        // noteBooks,
-        // noteBooksUpdateAt,
-        // noteBookId,
-        listenner
-    }) => {
-        // 初始化事件， 为开启的配置， 手工执行监听
-        const lestenerFlat = faltObject(listenner)
-        Object.keys(lestenerFlat || {}).forEach((key) => {
-            handleMessage['changeListener']({
-                eventName: key,
-                add: lestenerFlat[key]
-            })
+chrome.storage.sync.get(['listenner'], ({ listenner }) => {
+    // 初始化事件， 为开启的配置， 手工执行监听
+    const lestenerFlat = faltObject(listenner)
+    Object.keys(lestenerFlat || {}).forEach((key) => {
+        handleMessage['changeListener']({
+            eventName: key,
+            add: lestenerFlat[key]
         })
-    }
-)
+    })
+})
 
 // 手工执行监听：点击扩展图标
 handleMessage['changeListener']({
