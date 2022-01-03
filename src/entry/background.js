@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 08:46:21
- * @LastEditTime: 2022-01-03 19:17:26
+ * @LastEditTime: 2022-01-03 19:33:38
  * @LastEditors: NMTuan
  * @Description: 后台
  * @FilePath: \sy_bookmarks\src\entry\background.js
@@ -57,6 +57,11 @@ chrome.runtime.onMessage.addListener(function ({
     if (handleMessage[action]) {
         handleMessage[action](payload)
     }
+})
+
+// 安装后，自动打开设置页面
+chrome.runtime.onInstalled.addListener(function(){
+    chrome.runtime.openOptionsPage()
 })
 
 // 读本地配置
