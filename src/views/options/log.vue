@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 13:57:49
- * @LastEditTime: 2022-01-03 17:01:16
+ * @LastEditTime: 2022-01-03 19:19:35
  * @LastEditors: NMTuan
  * @Description: 日志
  * @FilePath: \sy_bookmarks\src\views\options\log.vue
@@ -10,13 +10,21 @@
 <template>
     <div>
         <dl>
+            <dt>2022.01.03 <sup>v1.1.0</sup></dt>
+            <dd>
+                简单写了个样式。<br />
+                正式开源。
+            </dd>
+
             <dt>2022.01.02 <sup>v1.0.0</sup></dt>
             <dd>完成基本功能逻辑，尝试打包并提交应用市场。</dd>
+
             <dt>2021.12.27</dt>
             <dd>
                 尝试调用 api ，验证 idea 可行性。<br />
                 边学 chrome 扩展开发，边尝试开发。
             </dd>
+
             <dt>2021.10</dt>
             <dd>
                 初次接触思源笔记，看到有 api 机制，感觉同步浏览器书签的 idea
