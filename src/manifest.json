@@ -1,0 +1,29 @@
+{
+    "manifest_version": 2,
+    "name": "思源书签",
+    "description": "基于思源笔记api，同步浏览器的书签至思源笔记，做到数据集中式管理。",
+    "version": "1.1.0",
+    "icons": {
+        "16": "/assets/icon16.png",
+        "48": "/assets/icon48.png",
+        "128": "/assets/icon128.png"
+    },
+    "background": {
+        "scripts": [
+            "/js/background.js"
+        ],
+        "persistent": false
+    },
+    "browser_action": {
+        "default_icon": "/assets/icon16.png",
+        "default_title": "思源书签"
+    },
+    "options_page": "options.html",
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "permissions": [
+        "storage",
+        "bookmarks",
+        "*://*/*"
+    ],
+    "homepage_url": "https://github.com/NMTuan/sy_bookmarks"
+}
