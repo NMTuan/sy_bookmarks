@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-31 08:59:21
- * @LastEditTime: 2022-01-02 22:18:25
+ * @LastEditTime: 2022-01-04 14:58:24
  * @LastEditors: NMTuan
  * @Description:
  * @FilePath: \sy_bookmarks\src\utils\handler.js
@@ -149,7 +149,7 @@ export const insertDoc = async (bookmark) => {
         return
     }
     //是否为文件夹
-    const isFolder = !bookmark.url && bookmark.dateGroupModified
+    const isFolder = !bookmark.url
     // 构建数据体
     const data = {}
     data.notebook = noteBookId
@@ -179,8 +179,6 @@ export const insertDoc = async (bookmark) => {
 
     if (isFolder) {
         attrs['icon'] = '1f4c1'
-        attrs['custom-bookMark-dateGroupModified'] =
-            bookmark.dateGroupModified.toString()
     } else {
         // console.log('findChildBlocksById 2', new Date().getTime() - d)
         // 找插入的那个默认块
