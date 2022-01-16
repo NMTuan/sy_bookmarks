@@ -8764,6 +8764,11 @@ wcwidth@^1.0.1:
   dependencies:
     defaults "^1.0.3"
 
+web-highlighter@^0.7.4:
+  version "0.7.4"
+  resolved "https://registry.nlark.com/web-highlighter/download/web-highlighter-0.7.4.tgz#75b603e58d5c724fe8b4a6c7c86b2a855107f101"
+  integrity sha1-dbYD5Y1cck/otKbHyGsqhVEH8QE=
+
 webpack-bundle-analyzer@^3.8.0:
   version "3.9.0"
   resolved "https://registry.npmmirror.com/webpack-bundle-analyzer/download/webpack-bundle-analyzer-3.9.0.tgz?cache=0&sync_timestamp=1634019921368&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fwebpack-bundle-analyzer%2Fdownload%2Fwebpack-bundle-analyzer-3.9.0.tgz#f6f94db108fb574e415ad313de41a2707d33ef3c"

@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2022-01-03 11:42:31
- * @LastEditTime: 2022-01-08 23:13:24
+ * @LastEditTime: 2022-01-16 16:04:52
  * @LastEditors: NMTuan
  * @Description: 
  * @FilePath: \sy_bookmarks\tailwind.config.js
@@ -14,7 +14,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#d23e30'
+        primary: '#d23f31',
+        secondPrimary: '#3b3e43'
       }
     },
   },
