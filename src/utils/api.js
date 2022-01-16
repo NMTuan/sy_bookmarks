@@ -45,6 +45,10 @@ const api = {
 
     // 插入块
     insertBlock: '/api/block/insertBlock',
+    //插入前置子块
+    prependBlock: '/api/block/prependBlock',
+    //插入后置子块
+    appendBlock: '/api/block/appendBlock',
     // 更新快
     updateBlock: '/api/block/updateBlock',
     // 删除块

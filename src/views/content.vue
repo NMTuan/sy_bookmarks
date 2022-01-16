@@ -2,7 +2,7 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2022-01-08 16:43:53
- * @LastEditTime: 2022-01-16 17:18:07
+ * @LastEditTime: 2022-01-16 23:19:43
  * @LastEditors: NMTuan
  * @Description: 
  * @FilePath: \sy_bookmarks\src\views\content.vue
@@ -14,13 +14,14 @@
         class="sy_popover"
         :style="popoverStyle"
     >
-        <div class="sy_popover__button">标记</div>
+        <div class="sy_popover__button" @click="mark">标记</div>
         <div class="sy_popover__button">评论</div>
         <div class="sy_popover__button">等等</div>
         <div class="sy_popover__button">等等</div>
     </div>
 </template>
 <script>
+import dom2string from 'dom-serializer'
 export default {
     data() {
         return {
@@ -45,6 +46,10 @@ export default {
     },
     mounted() {
         window.addEventListener('pointerup', (e) => {
+            // 点击菜单, 不处理
+            if (this.popover.contains(e.target)) {
+                return
+            }
             const selection = document.getSelection()
             this.popoverStatus = !selection.isCollapsed
             setTimeout(() => {
@@ -69,6 +74,58 @@ export default {
         this.hl.on(this.HL.event.CREATE, (context) => {
             console.log(1, context)
         })
+    },
+    methods: {
+        mark() {
+            console.log('mark')
+            const selection = document.getSelection()
+            const obj = this.hl.fromRange(selection.getRangeAt(0))
+            console.log('obj', obj.text)
+            // console.log('obj', obj.text.replaceAll('\n', '\n> '))
+            const string = obj.text.split('\n').reduce((total, item)=>{
+                total.push(`> ${item}`)
+                return total
+            }, [])
+            console.log('string', string.join('\n'))
+            this.hl.removeClass('highlight-mengshou-wrap', obj.id)
+            this.hl.addClass('sy-mark', obj.id)
+
+            // const dom = this.hl.getDoms(obj.id)
+            // console.log('dom', dom)
+
+            // var s = new XMLSerializer()
+
+            // const domString = dom.reduce((total, item) => {
+            //     // console.log('outerHTML', item.outerHTML)
+            //     // total += s.serializeToString(item)
+            //     total += item.outerHTML
+            //     return total
+            // }, '')
+            // console.log('domString', domString)
+
+            const data = `${string.join('\n')}
+{: style="color: var(--b3-card-info-color);background-color: var(--b3-card-info-background);"}
+`
+            const docId = '20220116232016-kabim8o'
+
+            chrome.runtime.sendMessage({
+                action: 'appendBlock',
+                payload: {
+                    parentID: docId,
+                    dataType: 'markdown',
+                    data: data
+                }
+            })
+
+            // chrome.runtime.sendMessage({
+            //     action: 'appendBlock',
+            //     payload: {
+            //         parentID: docId,
+            //         dataType: 'dom',
+            //         data: domString
+            //     }
+            // })
+        }
     }
 }
 </script>
@@ -101,5 +158,10 @@ export default {
             background-color: #d23f31;
         }
     }
+}
+</style>
+<style lang="scss">
+.sy-mark {
+    background-color: #d00;
 }
 </style>

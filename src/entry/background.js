@@ -2,11 +2,12 @@
  * @Author: NMTuan
  * @Email: NMTuan@qq.com
  * @Date: 2021-12-28 08:46:21
- * @LastEditTime: 2022-01-03 19:33:38
+ * @LastEditTime: 2022-01-16 21:34:44
  * @LastEditors: NMTuan
  * @Description: 后台
  * @FilePath: \sy_bookmarks\src\entry\background.js
  */
+import api from '@/utils/api'
 import { faltObject } from '@/utils/flat'
 
 // 事件处理
@@ -45,6 +46,17 @@ const handleMessage = {
         if (!state && add) {
             chromeMethod['addListener'](handleMethod)
         }
+    },
+
+    // 
+    appendBlock(payload) {
+        api.appendBlock(payload)
+            .then(res => {
+                console.log('111', res)
+            })
+            .catch(err => {
+            console.log('err', err)
+        })
     }
 }
 
@@ -56,6 +68,8 @@ chrome.runtime.onMessage.addListener(function ({
 }) {
     if (handleMessage[action]) {
         handleMessage[action](payload)
+    } else {
+        console.log(111, action, payload)
     }
 })
 
